@@ -1,6 +1,7 @@
 package eci.ieti.controller;
 
 
+import eci.ieti.data.TodoRepository;
 import eci.ieti.data.model.Todo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 
@@ -28,6 +30,9 @@ public class RESTController {
 
     @Autowired 
     GridFsTemplate gridFsTemplate;
+
+   @Autowired
+   TodoRepository todoRepository; 
 
    //TODO inject components (TodoRepository and GridFsTemplate)
 
@@ -44,23 +49,24 @@ public class RESTController {
     @CrossOrigin("*")
     @PostMapping("/files")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws IOException {
-
+        System.out.println(file);
         gridFsTemplate.store(file.getInputStream(), file.getName(), file.getContentType());
-        return null;
+        return "http:192.168.0.18:8080/api/files/"+file.getName();
     }
 
     @CrossOrigin("*")
     @PostMapping("/todo")
     public Todo createTodo(@RequestBody Todo todo) {
-        //TODO implement method
-        return null;
+        todoRepository.insert(todo);
+        System.out.println(todo);
+        return todo;
     }
 
     @CrossOrigin("*")
     @GetMapping("/todo")
     public List<Todo> getTodoList() {
-        //TODO implement method
-        return null;
+        todoRepository.findAll();
+        return todoRepository.findAll();
     }
 
 }
